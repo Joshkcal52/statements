@@ -1,39 +1,46 @@
-CREATE TABLE CompaniesTable (
-    comany_id UUID PRIMARY KEY,
+CREATE TABLE Companies (
+    comany_id SERIAL PRIMARY KEY,
     comany_name VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE CategoriesTable (
-    category_id UUID PRIMARY KEY,
+CREATE TABLE Categories (
+    category_id SERIAL PRIMARY KEY,
     category_name VARCHAR(255) UNIQUE NOT NULL
 );
 
-CREATE TABLE ProductsTable (
-    product_id UUID PRIMARY KEY,
-    comany_id UUID REFERENCES CompaniesTable(comany_id),
-    comany_name VARCHAR(255) UNIQUE NOT NULL,
-    price INTEGER,
+CREATE TABLE Products (
+    product_id SERIAL PRIMARY KEY,
+    comany_id SERIAL REFERENCES Companies(comany_id),
+    product_name VARCHAR(255) UNIQUE NOT NULL,
+    price FLOAT,
     description VARCHAR(255),
     active BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE ProductsCategoriesTable (
-    product_id UUID REFERENCES ProductsTable(product_id),
-    category_id UUID REFERENCES CategoriesTable(category_id)
+CREATE TABLE ProductsCategories (
+    product_id SERIAL REFERENCES Products(product_id),
+    category_id SERIAL REFERENCES Categories(category_id)
 );
-SELECT * FROM CompaniesTable;
-SELECT * FROM CategoriesTable;
-SELECT * FROM ProductsTable;
-SELECT * FROM ProductsTable WHERE active IS TRUE;
-SELECT * FROM ProductsTable WHERE comany_id = 'Company ID';
-SELECT * FROM CategoriesTable
-LEFT JOIN ProductsCategoriesTable ON CategoriesTable.category_id = ProductsCategoriesTable.category_id
-LEFT JOIN ProductsTable ON ProductsCategoriesTable.product_id = ProductsTable.product_id
-WHERE CategoriesTable.category_id = 'Category ID';
-SELECT * FROM ProductsTable
-LEFT JOIN ProductsCategoriesTable ON ProductsTable.product_id = ProductsCategoriesTable.product_id
-LEFT JOIN CategoriesTable ON ProductsCategoriesTable.category_id = CategoriesTable.category_id
-WHERE ProductsTable.product_id = 'Product ID';
-UPDATE ProductsTable SET price = 150, description = 'New Description' WHERE product_id = 'Product ID';
-UPDATE ProductsCategoriesTable SET category_id = 'New Category ID' WHERE product_id = 'Product ID';
-DELETE FROM ProductsTable WHERE product_id = 'Product ID';
+
+INSERT INTO Companies (company_name) VALUES ('apple');
+INSERT INTO Categories (category_name) VALUES ('laptop');
+INSERT INTO Products (product_name, price, description, company_id ) VALUES ('macbook pro' , 899.00, 'a sleek powerful laptop' , 1);
+
+SELECT * FROM Companies;
+SELECT * FROM Categories;
+SELECT * FROM Products;
+SELECT * FROM Products WHERE active IS TRUE;
+SELECT * FROM Products WHERE comany_id = 'Company ID';
+SELECT * FROM Categories
+LEFT JOIN ProductsCategories ON Categories.category_id = ProductsCategories.category_id
+LEFT JOIN Products ON ProductsCategories.product_id = Products.product_id
+WHERE Categories.category_id = 'Category ID';
+SELECT * FROM Products
+LEFT JOIN ProductsCategories ON Products.product_id = ProductsCategories.product_id
+LEFT JOIN Categories ON ProductsCategories.category_id = Categories.category_id
+WHERE Products.product_id = 'Product ID';
+
+UPDATE Products SET price = 150, description = 'New Description' WHERE product_id = 'Product ID';
+UPDATE ProductsCategories SET category_id = 'New Category ID' WHERE product_id = 'Product ID';
+
+DELETE FROM Products WHERE product_id = 'Product ID';
